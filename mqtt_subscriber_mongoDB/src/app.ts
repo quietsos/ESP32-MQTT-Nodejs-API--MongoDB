@@ -1,17 +1,48 @@
 import mqtt from 'mqtt';
 import { mongoConn } from './dbConnection';
-import { esp32DataSchema } from './mongodSchema/esp32Schema';
-
-let mqttConnection = mqtt.connect("mqtt://test.mosquitto.org")
+import { baseStationDataSchema } from './mongodSchema/baseStationSchema';
 
 
 
-let jsonTopic = 'esp32/json'
+const mqtt_broker = '188.166.242.33';
+const mqtt_port = 1885;
+const mqtt_user = 'apsIoT';
+const mqtt_pass = 'apsIoT24';
+
+const mqttUrl = `mqtt://${mqtt_broker}:${mqtt_port}`;
+
+
+
+
+
+const options = {
+    username: mqtt_user,
+    password: mqtt_pass,
+  };
+
+
+let mqttConnection = mqtt.connect(mqttUrl, options)
+
+
+
+let tag1_baseStation1 = 'tag1_baseStation1'
+let tag2_baseStation1 = 'tag2_baseStation1'
+let tag3_baseStation1 = 'tag3_baseStation1'
+let tag4_baseStation1 = 'tag4_baseStation1'
+let tag5_baseStation1 = 'tag5_baseStation1'
+let tag6_baseStation1 = 'tag6_baseStation1'
+
 
 mqttConnection.on("connect", ()=>{
    
-    mqttConnection.subscribe(jsonTopic)
+    mqttConnection.subscribe(tag1_baseStation1)
+    mqttConnection.subscribe(tag2_baseStation1)
+    mqttConnection.subscribe(tag3_baseStation1)
+    mqttConnection.subscribe(tag4_baseStation1)
+    mqttConnection.subscribe(tag5_baseStation1)
+    mqttConnection.subscribe(tag6_baseStation1)
 
+    
     console.log("Successfully Subscribed")
 })
 
@@ -33,7 +64,7 @@ mongoConn()
 function saveDataInMongoDB(inputJSON){
     try{
         return new Promise(async(resolve,reject) =>{
-            await esp32DataSchema.insertMany(inputJSON).then((result: any) => {
+            await baseStationDataSchema.insertMany(inputJSON).then((result: any) => {
                 if (result.length>0){
                     resolve({statusCode: 100, message: "Saved in MongoDB"})
                 }
@@ -48,3 +79,5 @@ function saveDataInMongoDB(inputJSON){
         console.log(e.message)
     }
 }
+
+

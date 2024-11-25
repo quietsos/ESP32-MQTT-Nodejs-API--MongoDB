@@ -14,11 +14,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mqtt_1 = __importDefault(require("mqtt"));
 const dbConnection_1 = require("./dbConnection");
-const esp32Schema_1 = require("./mongodSchema/esp32Schema");
-let mqttConnection = mqtt_1.default.connect("mqtt://test.mosquitto.org");
-let jsonTopic = 'esp32/json';
+const baseStationSchema_1 = require("./mongodSchema/baseStationSchema");
+const mqtt_broker = '188.166.242.33';
+const mqtt_port = 1885;
+const mqtt_user = 'apsIoT';
+const mqtt_pass = 'apsIoT24';
+const mqttUrl = `mqtt://${mqtt_broker}:${mqtt_port}`;
+const options = {
+    username: mqtt_user,
+    password: mqtt_pass,
+};
+let mqttConnection = mqtt_1.default.connect(mqttUrl, options);
+let tag1_baseStation1 = 'tag1_baseStation1';
+let tag2_baseStation1 = 'tag2_baseStation1';
+let tag3_baseStation1 = 'tag3_baseStation1';
+let tag4_baseStation1 = 'tag4_baseStation1';
+let tag5_baseStation1 = 'tag5_baseStation1';
+let tag6_baseStation1 = 'tag6_baseStation1';
 mqttConnection.on("connect", () => {
-    mqttConnection.subscribe(jsonTopic);
+    mqttConnection.subscribe(tag1_baseStation1);
+    mqttConnection.subscribe(tag2_baseStation1);
+    mqttConnection.subscribe(tag3_baseStation1);
+    mqttConnection.subscribe(tag4_baseStation1);
+    mqttConnection.subscribe(tag5_baseStation1);
+    mqttConnection.subscribe(tag6_baseStation1);
     console.log("Successfully Subscribed");
 });
 mqttConnection.on('message', (topic, message) => __awaiter(void 0, void 0, void 0, function* () {
@@ -31,7 +50,7 @@ mqttConnection.on('message', (topic, message) => __awaiter(void 0, void 0, void 
 function saveDataInMongoDB(inputJSON) {
     try {
         return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
-            yield esp32Schema_1.esp32DataSchema.insertMany(inputJSON).then((result) => {
+            yield baseStationSchema_1.baseStationDataSchema.insertMany(inputJSON).then((result) => {
                 if (result.length > 0) {
                     resolve({ statusCode: 100, message: "Saved in MongoDB" });
                 }
